@@ -3,7 +3,7 @@ import { Socket } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import useWindowSize from '../utils/useWindowSize'
-import { useSidebarStore } from '../store'
+import { useSidebarStore, useInviteStore } from '../store'
 import Leaderboard from './Leaderboard'
 import Chat from './Chat'
 
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ socketRef }) => {
 
     const { width, height } = useWindowSize();
     const { players, setPlayers, assignedPlayerName, setAssignedPlayerName } = useSidebarStore();
+    const { setPreference } = useInviteStore();
 
     const [tab, setTab] = useState(0);
     const [leaderboard, setLeaderboard] = useState<{ [key: string]: number }>({});
@@ -49,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ socketRef }) => {
 
     const handleSubmitGuess = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (guess.join('').length < guessLength) return toast.warning('Guess the drawing subject');
         socketRef.current?.emit('guess-word', { playerName: assignedPlayerName, guess: guess.join('') });
         setGuess(Array(guessLength).fill(''));
@@ -156,6 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({ socketRef }) => {
             });
             if (player === useSidebarStore.getState().assignedPlayerName) {
                 socket?.emit('leave-room');
+                setPreference('');
                 navigate('/');
                 toast.error('You have been kicked from the room');
             }
@@ -188,8 +190,8 @@ const Sidebar: React.FC<SidebarProps> = ({ socketRef }) => {
     return (
         <div className={`absolute z-[0] ${width < 768 ? "h-[250px]" : `h-[${height - 54}px]`} md:right-0 md:top-[54px] bottom-0 md:max-w-[400px] lg:max-w-[450px] w-[100%] bg-gray-300 border-l border-gray-400 overflow-auto`}>
             <div className='sticky top-0 grid grid-cols-2 border-y border-gray-400'>
-                <button className={`${tab === 0 ? "bg-gray-400" : "bg-gray-300"} py-2 font-semibold text-xl text-center`} onClick={() => setTab(0)}>Guess</button>
-                <button className={`${tab === 1 ? "bg-gray-400" : "bg-gray-300"} py-2 font-semibold text-xl text-center relative`} onClick={() => setTab(1)}>
+                <button className={`${tab === 0 ? "bg-gray-400" : "bg-gray-300"} py-2 font-semibold md:text-lg text-center`} onClick={() => setTab(0)}>Guess</button>
+                <button className={`${tab === 1 ? "bg-gray-400" : "bg-gray-300"} py-2 font-semibold md:text-lg text-center relative`} onClick={() => setTab(1)}>
                     <p>Chat<span className='absolute left-[60.5%] translate-x-[60.5%] bottom-[11px] text-sm text-gray-600'>{messages.length > 0 && messages.length}</span></p>
                 </button>
             </div>
