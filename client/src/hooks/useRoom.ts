@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { useInviteStore } from '../store'
+import { useSidebarStore, useInviteStore } from '../store'
 
 interface UseCreateRoomReturn {
     handleRandomRoom: () => Promise<void>;
@@ -14,12 +14,20 @@ interface UseCreateRoomReturn {
 
 export const useRoom = (): UseCreateRoomReturn => {
     const navigate = useNavigate();
+
+    const { assignedPlayerName } = useSidebarStore();
     const { setRoomType } = useInviteStore();
+
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isCreating, setIsCreating] = useState<boolean>(false);
     const [isJoining, setIsJoining] = useState<boolean>(false);
 
     const handleRandomRoom = async () => {
+        if (!assignedPlayerName.split('#')[0].trim()) {
+            toast.warning("Enter your name to proceed");
+            return;
+        }
+
         setIsPlaying(true);
 
         try {
@@ -41,6 +49,11 @@ export const useRoom = (): UseCreateRoomReturn => {
     };
 
     const handleCreateRoom = async () => {
+        if (!assignedPlayerName.split('#')[0].trim()) {
+            toast.warning("Enter your name to proceed");
+            return;
+        }
+
         setIsCreating(true);
 
         try {

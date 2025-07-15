@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import useWindowSize from '../utils/useWindowSize'
 import { useDraw } from '../hooks/useDraw'
-import { useSidebarStore, useToolbarStore } from '../store'
+import { useToolbarStore, useSidebarStore, useInviteStore } from '../store'
 import { drawLine } from '../utils/drawLine'
 import { connectSocket } from '../utils/connectSocket'
 import Sidebar from './Sidebar'
@@ -16,6 +16,7 @@ const Canvas = () => {
     const { width, height } = useWindowSize();
     const { brushThickness, color } = useToolbarStore();
     const { assignedPlayerName, players, setPlayers, addPlayer } = useSidebarStore();
+    const { setInvite } = useInviteStore();
 
     const socketRef = useRef(connectSocket());
     const joinedRoomRef = useRef(false);
@@ -85,10 +86,12 @@ const Canvas = () => {
         socket.on('clear', clear);
 
         socket.on('prompt-word-entry', (playerName: string) => {
+            setInvite(false);
             setIsWordEntryEnabled(playerName === useSidebarStore.getState().assignedPlayerName);
         });
 
         socket.on('word-submitted', ({ playerName }) => {
+
             setIsWordEntryEnabled(false);
             setCanDraw(playerName === useSidebarStore.getState().assignedPlayerName);
         });

@@ -14,7 +14,7 @@ interface ToolbarProps {
 }
 
 const Toolbar = ({ socketRef, canDraw, clear }: ToolbarProps) => {
-    const { setInvite } = useInviteStore();
+    const { setInvite, setPreference } = useInviteStore();
     const {
         colorPicker, setColorPicker,
         color, setColor
@@ -38,7 +38,7 @@ const Toolbar = ({ socketRef, canDraw, clear }: ToolbarProps) => {
     return (
         <div className='absolute z-[1] top-0 left-0 md:left-auto md:w-[400px] lg:w-[450px] right-0 flex items-center justify-between p-2 bg-gray-300 md:border-l border-gray-400'>
             <div className='flex gap-2'>
-                <div title={`Time left: ${timeLeft} seconds`} className='bg-white size-[38px] grid place-items-center font-semibold rounded-full cursor-not-allowed'>
+                <div title={`Time left: ${timeLeft} seconds`} className='bg-white size-[38px] grid place-items-center text-sm font-semibold rounded-full cursor-not-allowed'>
                     {timeLeft}
                 </div>
                 {canDraw && (
@@ -49,9 +49,9 @@ const Toolbar = ({ socketRef, canDraw, clear }: ToolbarProps) => {
                                 onClick={() => {
                                     setColorPicker(!colorPicker);
                                 }}
-                                className='bg-white active:scale-90 duration-200 rounded-full p-2'
+                                className='size-[38px] bg-white active:scale-90 duration-200 rounded-full p-2'
                             >
-                                {colorPicker ? <AiOutlineClose size={22} /> : <PiPaintBrushFill color={color} size={22} />}
+                                {colorPicker ? <AiOutlineClose size={18} /> : <PiPaintBrushFill color={color} size={18} />}
                             </button>
                             {colorPicker && (
                                 <HexColorPicker
@@ -67,9 +67,9 @@ const Toolbar = ({ socketRef, canDraw, clear }: ToolbarProps) => {
                                 clear();
                                 setColorPicker(false);
                             }}
-                            className='bg-white active:scale-90 duration-200 rounded-full p-2'
+                            className='size-[38px] bg-white active:scale-90 duration-200 rounded-full p-2'
                         >
-                            <PiEraserFill size={22} />
+                            <PiEraserFill size={18} />
                         </button>
                     </>
                 )}
@@ -78,13 +78,20 @@ const Toolbar = ({ socketRef, canDraw, clear }: ToolbarProps) => {
             <div className="flex gap-2">
                 <div className="flex gap-2">
                     <button
-                        className='bg-white active:scale-90 duration-200 rounded-full p-2'
+                        className='size-[38px] bg-white active:scale-90 duration-200 rounded-full p-2'
                         onClick={() => setInvite(true)}
                     >
-                        <PiShareNetworkFill size={22} />
+                        <PiShareNetworkFill size={18} />
                     </button>
-                    <Link to='/' onClick={() => socketRef.current?.emit('leave-room')} className='size-[38px] grid place-items-center bg-white active:scale-90 duration-200 rounded-full'>
-                        <RxExit size={20} />
+                    <Link
+                        to='/'
+                        onClick={() => {
+                            socketRef.current?.emit('leave-room');
+                            setPreference('');
+                        }}
+                        className='size-[38px] grid place-items-center bg-white active:scale-90 duration-200 rounded-full'
+                    >
+                        <RxExit size={18} />
                     </Link>
                 </div>
             </div>
